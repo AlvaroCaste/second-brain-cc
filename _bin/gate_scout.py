@@ -13,7 +13,7 @@ def main():
     if not path:
         sys.exit(0)
     allowed = os.path.realpath(os.path.join(B.VAULT, "60-Context-Packs"))
-    if not os.path.realpath(os.path.expanduser(path)).startswith(allowed):
+    if not B.is_within(os.path.expanduser(path), allowed):
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse", "permissionDecision": "deny",
             "permissionDecisionReason":
