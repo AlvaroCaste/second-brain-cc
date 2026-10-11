@@ -1051,11 +1051,22 @@ def current_branch(cwd):
     return out if code == 0 else ""
 
 
-def in_vault(path):
+def is_within(path, root):
+    """Whether path is root or a descendant of root, after resolving symlinks.
+
+    A string prefix is not a directory boundary: ``/vault-evil`` must not count as
+    a child of ``/vault``.  ``realpath`` also keeps symlink escapes out of callers
+    that use this for write authorization.
+    """
     try:
-        return os.path.realpath(path).startswith(os.path.realpath(VAULT))
+        path, root = os.path.realpath(path), os.path.realpath(root)
+        return os.path.commonpath((path, root)) == root
     except Exception:
         return False
+
+
+def in_vault(path):
+    return is_within(path, VAULT)
 
 
 def pid_alive(pid):
